@@ -38,9 +38,7 @@ function App() {
         
         // Check for unfinished entry
         const running = sorted.find(e => !e.endTime)
-        if (running) {
-          setActiveEntry(running)
-        }
+        setActiveEntry(running || null)
       }
     } catch (error) {
       console.error("Failed to load entries:", error)

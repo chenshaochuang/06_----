@@ -101,6 +101,14 @@ export function Timer({ onStart, onStop, activeEntry, suggestions = [] }: TimerP
           <Button disabled={needsTitle && !pendingTitle.trim()} onClick={() => handleMoodSelect('neutral')} variant="outline" className="text-4xl h-24 w-24 p-0 hover:bg-yellow-500/10 hover:border-yellow-500 hover:text-yellow-600 transition-all scale-100 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Neutral Focus">😐</Button>
           <Button disabled={needsTitle && !pendingTitle.trim()} onClick={() => handleMoodSelect('tired')} variant="outline" className="text-4xl h-24 w-24 p-0 hover:bg-red-500/10 hover:border-red-500 hover:text-red-600 transition-all scale-100 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Tired Focus">😫</Button>
         </div>
+
+        <Button 
+          variant="ghost" 
+          onClick={() => setShowMoodSelection(false)}
+          className="text-muted-foreground hover:text-foreground"
+        >
+          {t('timer.resume')}
+        </Button>
       </div>
     )
   }
