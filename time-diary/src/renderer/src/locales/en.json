@@ -1,0 +1,43 @@
+{
+  "app": {
+    "title": "Time Diary",
+    "description": "Record your daily activities and manage your time effectively."
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "confirm": "Confirm",
+    "language": "Language",
+    "theme": "Theme",
+    "settings": "Settings",
+    "back": "Back"
+  },
+  "diary": {
+    "new_entry": "New Entry",
+    "edit_entry": "Edit Entry",
+    "delete_entry": "Delete Entry",
+    "content_placeholder": "What did you do today?",
+    "start_time": "Start Time",
+    "end_time": "End Time",
+    "duration": "Duration",
+    "category": "Category",
+    "tags": "Tags",
+    "total_time": "Total Time",
+    "no_entries": "No entries found for this date."
+  },
+  "timer": {
+    "start": "Start",
+    "pause": "Pause",
+    "resume": "Resume",
+    "stop": "Stop",
+    "reset": "Reset",
+    "pomodoro": "Pomodoro",
+    "short_break": "Short Break",
+    "long_break": "Long Break"
+  },
+  "validation": {
+    "required": "This field is required."
+  }
+}
