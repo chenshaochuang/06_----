@@ -25,7 +25,10 @@
     "category": "分类",
     "tags": "标签",
     "total_time": "总时长",
-    "no_entries": "该日期没有记录。"
+    "no_entries": "该日期没有记录。",
+    "group_by_task": "按任务分组",
+    "list_view": "列表视图",
+    "count_suffix": "次记录"
   },
   "timer": {
     "start": "开始",

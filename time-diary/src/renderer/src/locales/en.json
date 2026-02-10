@@ -25,7 +25,10 @@
     "category": "Category",
     "tags": "Tags",
     "total_time": "Total Time",
-    "no_entries": "No entries found for this date."
+    "no_entries": "No entries found for this date.",
+    "group_by_task": "Group by Task",
+    "list_view": "List View",
+    "count_suffix": "records"
   },
   "timer": {
     "start": "Start",
