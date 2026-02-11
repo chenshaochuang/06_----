@@ -42,8 +42,8 @@ function createFloatingWindow(): void {
   }
 
   floatingWindow = new BrowserWindow({
-    width: 300,
-    height: 120,
+    width: 320,
+    height: 140,
     frame: false,
     resizable: false,
     transparent: true,

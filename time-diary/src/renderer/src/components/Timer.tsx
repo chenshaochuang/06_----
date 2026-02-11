@@ -70,7 +70,7 @@ export function Timer({ onStart, onStop, activeEntry, suggestions = [] }: TimerP
   }
 
   if (showMoodSelection) {
-    const needsTitle = activeEntry && !activeEntry.title
+    const needsTitle = !!(activeEntry && !activeEntry.title)
     return (
       <div className="flex flex-col items-center gap-6 p-8 bg-card rounded-xl border border-border shadow-sm">
         <h3 className="text-xl font-semibold text-foreground">

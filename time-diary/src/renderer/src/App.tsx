@@ -50,6 +50,7 @@ function App() {
     if (window.api?.onEntriesUpdated) {
       return window.api.onEntriesUpdated(loadEntries)
     }
+    return
   }, [])
 
   useEffect(() => {

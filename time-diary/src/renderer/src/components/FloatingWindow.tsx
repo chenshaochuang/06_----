@@ -11,6 +11,7 @@ export function FloatingWindow() {
   const [inputValue, setInputValue] = useState('')
   const [isStopping, setIsStopping] = useState(false)
   const [pendingTitle, setPendingTitle] = useState('')
+  const [isHovered, setIsHovered] = useState(false)
 
   const loadActiveEntry = async () => {
     try {
@@ -27,9 +28,17 @@ export function FloatingWindow() {
   }
 
   useEffect(() => {
+    // Make body transparent for floating window
+    document.body.style.backgroundColor = 'transparent'
+    document.documentElement.style.backgroundColor = 'transparent'
+    
     loadActiveEntry()
     const cleanup = window.api.onEntriesUpdated(loadActiveEntry)
-    return cleanup
+    return () => {
+      cleanup()
+      document.body.style.backgroundColor = ''
+      document.documentElement.style.backgroundColor = ''
+    }
   }, [])
 
   useEffect(() => {
@@ -95,118 +104,140 @@ export function FloatingWindow() {
 
   return (
     <div 
-      className="h-screen w-screen flex flex-col items-center justify-center bg-background/95 border-2 border-primary/20 select-none overflow-hidden"
-      style={{ WebkitAppRegion: 'drag' } as any}
+      className="h-screen w-screen flex items-center justify-center bg-transparent select-none overflow-hidden p-2"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="absolute top-1 right-1 flex gap-1" style={{ WebkitAppRegion: 'no-drag' } as any}>
-         <Button 
-           variant="ghost" 
-           size="icon" 
-           className="h-6 w-6 hover:bg-primary/10 rounded-full"
-           onClick={() => window.api.switchToMain()}
-           title="Expand to main window"
-         >
-           <Maximize2 className="h-3 w-3" />
-         </Button>
-      </div>
+      <div 
+        className="relative w-full h-full max-h-[120px] bg-background/60 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-2xl rounded-3xl flex flex-col items-center justify-center overflow-hidden transition-all duration-300 hover:bg-background/70 group"
+        style={{ WebkitAppRegion: 'drag' } as any}
+      >
+        {/* Background Gradient Effect */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 pointer-events-none" />
 
-      <div className="flex flex-col items-center gap-0.5 w-full px-4" style={{ WebkitAppRegion: 'no-drag' } as any}>
-        {activeEntry ? (
-          isStopping ? (
-            <div className="flex flex-col items-center gap-2 w-full animate-in fade-in zoom-in-95 duration-200">
-              {!activeEntry.title && (
-                <input
-                  type="text"
-                  value={pendingTitle}
-                  onChange={(e) => setPendingTitle(e.target.value)}
-                  placeholder={t('diary.content_placeholder')}
-                  className="w-full h-6 text-xs bg-transparent border-b border-primary/20 focus:border-primary outline-none text-center mb-1"
-                  autoFocus
-                />
-              )}
-              <div className="flex gap-2 justify-center">
-                <Button 
-                  onClick={() => handleFinalStop('focus')} 
-                  variant="outline" 
-                  size="icon"
-                  className="h-8 w-8 text-lg hover:scale-110 transition-transform hover:bg-green-500/10 hover:border-green-500" 
-                  disabled={!activeEntry.title && !pendingTitle.trim()}
-                >
-                  🔥
-                </Button>
-                <Button 
-                  onClick={() => handleFinalStop('neutral')} 
-                  variant="outline" 
-                  size="icon"
-                  className="h-8 w-8 text-lg hover:scale-110 transition-transform hover:bg-yellow-500/10 hover:border-yellow-500"
-                  disabled={!activeEntry.title && !pendingTitle.trim()}
-                >
-                  😐
-                </Button>
-                <Button 
-                  onClick={() => handleFinalStop('tired')} 
-                  variant="outline" 
-                  size="icon"
-                  className="h-8 w-8 text-lg hover:scale-110 transition-transform hover:bg-red-500/10 hover:border-red-500"
-                  disabled={!activeEntry.title && !pendingTitle.trim()}
-                >
-                  😫
-                </Button>
-              </div>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setIsStopping(false)}
-                className="h-6 text-[10px] text-muted-foreground hover:text-foreground flex items-center gap-1 mt-1"
-              >
-                <ArrowLeft className="h-3 w-3" /> Resume
-              </Button>
-            </div>
-          ) : (
-            <>
-              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
-                Focusing
-              </span>
-              <h3 className="text-sm font-bold truncate max-w-full text-center leading-tight">
-                {activeEntry.title || <span className="italic text-muted-foreground">No Title</span>}
-              </h3>
-              <div className="flex items-center gap-2 mt-0.5">
-                <div className="text-2xl font-mono font-medium tracking-tight text-primary tabular-nums">
-                  {formatTime(elapsed)}
+        {/* Expand Button (Hidden by default, visible on hover) */}
+        <div 
+          className={`absolute top-2 right-3 z-50 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`} 
+          style={{ WebkitAppRegion: 'no-drag' } as any}
+        >
+           <Button 
+             variant="ghost" 
+             size="icon" 
+             className="h-6 w-6 hover:bg-primary/10 rounded-full text-muted-foreground hover:text-primary transition-colors"
+             onClick={() => window.api.switchToMain()}
+             title="Expand to main window"
+           >
+             <Maximize2 className="h-3.5 w-3.5" />
+           </Button>
+        </div>
+
+        <div className="flex flex-col items-center justify-center w-full px-6 z-10" style={{ WebkitAppRegion: 'no-drag' } as any}>
+          {activeEntry ? (
+            isStopping ? (
+              <div className="flex flex-col items-center gap-3 w-full animate-in fade-in zoom-in-95 duration-200">
+                {!activeEntry.title && (
+                  <input
+                    type="text"
+                    value={pendingTitle}
+                    onChange={(e) => setPendingTitle(e.target.value)}
+                    placeholder={t('diary.content_placeholder')}
+                    className="w-full h-8 text-sm bg-transparent border-b border-primary/20 focus:border-primary outline-none text-center placeholder:text-muted-foreground/50 font-medium"
+                    autoFocus
+                  />
+                )}
+                <div className="flex gap-3 justify-center items-center">
+                  <Button 
+                    onClick={() => handleFinalStop('focus')} 
+                    variant="outline" 
+                    size="icon"
+                    className="h-10 w-10 text-xl rounded-full hover:scale-110 transition-all duration-200 bg-background/50 hover:bg-green-500/20 hover:border-green-500 border-dashed" 
+                    disabled={!activeEntry.title && !pendingTitle.trim()}
+                    title="Focused"
+                  >
+                    🔥
+                  </Button>
+                  <Button 
+                    onClick={() => handleFinalStop('neutral')} 
+                    variant="outline" 
+                    size="icon"
+                    className="h-10 w-10 text-xl rounded-full hover:scale-110 transition-all duration-200 bg-background/50 hover:bg-yellow-500/20 hover:border-yellow-500 border-dashed"
+                    disabled={!activeEntry.title && !pendingTitle.trim()}
+                    title="Neutral"
+                  >
+                    😐
+                  </Button>
+                  <Button 
+                    onClick={() => handleFinalStop('tired')} 
+                    variant="outline" 
+                    size="icon"
+                    className="h-10 w-10 text-xl rounded-full hover:scale-110 transition-all duration-200 bg-background/50 hover:bg-red-500/20 hover:border-red-500 border-dashed"
+                    disabled={!activeEntry.title && !pendingTitle.trim()}
+                    title="Tired"
+                  >
+                    😫
+                  </Button>
                 </div>
                 <Button 
-                  onClick={handleStopClick} 
-                  size="icon" 
-                  variant="destructive" 
-                  className="h-6 w-6 rounded-md shadow-sm"
-                  title="Stop timer"
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setIsStopping(false)}
+                  className="h-6 text-[10px] text-muted-foreground hover:text-primary flex items-center gap-1 -mt-1 rounded-full px-3 hover:bg-primary/5"
                 >
-                  <Square className="h-3 w-3 fill-current" />
+                  <ArrowLeft className="h-3 w-3" /> Resume
                 </Button>
               </div>
-            </>
-          )
-        ) : (
-          <div className="flex w-full items-center gap-2 mt-1">
-             <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleStart()}
-              placeholder={t('diary.content_placeholder')}
-              className="flex-1 h-6 text-xs bg-transparent border-b border-primary/20 focus:border-primary outline-none placeholder:text-muted-foreground/50 text-center transition-colors"
-              autoFocus
-            />
-            <Button 
-              onClick={handleStart} 
-              size="icon" 
-              className="h-6 w-6 shrink-0 rounded-full"
-              title="Start timer"
-            >
-              <Play className="h-3 w-3 fill-current ml-0.5" />
-            </Button>
-          </div>
-        )}
+            ) : (
+              <div className="flex flex-col items-center w-full gap-1">
+                <h3 className="text-xs font-medium text-muted-foreground/80 truncate max-w-[200px] text-center tracking-wide uppercase">
+                  {activeEntry.title || <span className="italic opacity-50">No Title</span>}
+                </h3>
+                
+                <div className="relative group/timer">
+                  <div className="text-4xl font-mono font-bold tracking-tighter text-foreground tabular-nums drop-shadow-sm select-text">
+                    {formatTime(elapsed)}
+                  </div>
+                </div>
+
+                <div className={`transition-all duration-300 overflow-hidden ${isHovered ? 'h-8 opacity-100 mt-1' : 'h-0 opacity-0 mt-0'}`}>
+                   <Button 
+                    onClick={handleStopClick} 
+                    size="sm" 
+                    variant="destructive" 
+                    className="h-7 px-4 rounded-full shadow-sm hover:shadow-md transition-all active:scale-95 text-xs font-medium bg-red-500/90 hover:bg-red-600"
+                    title="Stop timer"
+                  >
+                    <Square className="h-3 w-3 fill-current mr-1.5" /> Stop
+                  </Button>
+                </div>
+              </div>
+            )
+          ) : (
+            <div className="flex w-full items-center gap-3 px-2">
+               <div className="flex-1 relative group">
+                 <div className="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none">
+                   <div className="w-1.5 h-1.5 rounded-full bg-primary/50 group-focus-within:bg-primary transition-colors" />
+                 </div>
+                 <input
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleStart()}
+                  placeholder={t('diary.content_placeholder')}
+                  className="w-full h-10 pl-5 pr-2 text-sm bg-muted/30 hover:bg-muted/50 focus:bg-muted/50 rounded-xl border-none focus:ring-1 focus:ring-primary/20 outline-none placeholder:text-muted-foreground/40 transition-all"
+                  autoFocus
+                />
+               </div>
+              <Button 
+                onClick={handleStart} 
+                size="icon" 
+                className="h-10 w-10 shrink-0 rounded-full shadow-lg hover:shadow-primary/25 bg-primary hover:bg-primary/90 transition-all hover:scale-105 active:scale-95"
+                title="Start timer"
+              >
+                <Play className="h-4 w-4 fill-current ml-0.5" />
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
